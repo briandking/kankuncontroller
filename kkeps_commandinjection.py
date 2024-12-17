@@ -5,9 +5,9 @@ from socket import AF_INET, SOCK_STREAM, socket
 
 from Cryptodome.Cipher import AES
 
-KEY = "fdsl;mewrjope456fds4fbvfnjwaugfo"
-MAC_ADDR = "00:15:61:bd:82:91"
-IP_ADDR = "192.168.10.253"
+KEY = "fdsl;mewrjope456fds4fbvfnjwaugfo".encode("utf-8")
+MAC_ADDR = "28:d9:8a:8d:f4:bb"
+IP_ADDR = "192.168.145.253"
 SOCK_TIMEOUT = 1
 RETRY = 0
 RPORT = 37092
@@ -37,7 +37,7 @@ def create_dump(data):
     dump, by, hx, _temp = "", [], [], ""
     unprint = list(data)
     for el in unprint:
-        hx.append(codecs.encode(el, "hex").decode("utf-8"))
+        hx.append(el.encode("utf-8").hex())
         by.append(sanitize_byte(el))
     i = 0
     while i < len(hx):
@@ -70,10 +70,10 @@ class CryptoSock:
         self.sock.connect((host, port))
 
     def txnc(self, msg, rhost, rport) -> None:
-        self.sock.sendto(self.key.encrypt(msg), (rhost, rport))
+        self.sock.sendto(self.key.encrypt(msg.encode("utf-8")), (rhost, rport))
 
     def tx(self, msg) -> None:
-        self.sock.send(self.key.encrypt(msg))
+        self.sock.send(self.key.encrypt(msg.encode("utf-8")))
 
     def rx(self):
         try:

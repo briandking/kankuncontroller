@@ -5,7 +5,7 @@ from socket import AF_INET, SOCK_DGRAM, socket
 
 from Cryptodome.Cipher import AES
 
-KEY = "fdsl;mewrjope456fds4fbvfnjwaugfo"
+KEY = "fdsl;mewrjope456fds4fbvfnjwaugfo".encode('utf-8')
 
 def stdout (t, m):
         if (t == "+"):
@@ -30,7 +30,7 @@ def createDump (data):
         dump, by, hx, _temp = "", [], [], ""
         unprint = list(data)
         for el in unprint:
-                hx.append(el.encode("hex"))
+                hx.append(el.encode("utf-8").hex())
                 by.append(sanitizeByte(el))
         i = 0
         while i < len(hx):
